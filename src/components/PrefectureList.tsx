@@ -8,7 +8,10 @@ type Prefecture = {
 export default function PrefectureList() {
   const [prefs, setPrefs] = useState<Prefecture[]>([])
   const [loading, setLoading] = useState(true)
+
   const [error, setError] = useState<string | null>(null)
+
+
 
   useEffect(() => {
     const fetchPrefectures = async () => {
@@ -23,8 +26,10 @@ export default function PrefectureList() {
         )
         const data = await res.json()
         setPrefs(data.result)
+
       } catch {
         setError("都道府県データの取得に失敗しました")
+
       } finally {
         setLoading(false)
       }
@@ -33,7 +38,9 @@ export default function PrefectureList() {
   }, [])
 
   if (loading) return <p>読み込み中...</p>
+
   if (error) return <p>エラー: {error}</p>
+
 
   return (
     <ul>
