@@ -50,16 +50,16 @@ chore(deps): update React to v19
 
 ### Description Template
 ```markdown
-## Summary
+## 概要
 - [主な変更内容を箇条書きで記載]
 
-## Changes
+## 変更内容
 - [具体的な変更内容]
 
-## Test Plan
+## テスト計画
 - [テスト方法やチェック項目]
 
-## Screenshots (if applicable)
+## スクリーンショット（該当する場合）
 [UI変更がある場合はスクリーンショットを添付]
 ```
 
