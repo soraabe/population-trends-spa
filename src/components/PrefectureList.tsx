@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react"
-
-type Prefecture = {
-  prefCode: number
-  prefName: string
-}
+import type { Prefecture, PopulationResponse } from "../types/api"
 
 export default function PrefectureList() {
   const [prefs, setPrefs] = useState<Prefecture[]>([])
+  const [selectedPrefs, setSelectedPrefs] = useState<Set<number>>(new Set())
+  const [populationData, setPopulationData] = useState<Map<number, PopulationResponse>>(new Map())
   const [loading, setLoading] = useState(true)
-
+  const [populationLoading, setPopulationLoading] = useState<Set<number>>(new Set())
   const [error, setError] = useState<string | null>(null)
 
 
@@ -37,18 +35,68 @@ export default function PrefectureList() {
     fetchPrefectures()
   }, [])
 
+  const fetchPopulationData = async (prefCode: number) => {
+    if (populationData.has(prefCode)) return
+
+    setPopulationLoading(prev => new Set(prev).add(prefCode))
+    
+    try {
+      const res = await fetch(
+        `https://yumemi-frontend-engineer-codecheck-api.vercel.app/api/v1/population/composition/perYear?cityCode=-&prefCode=${prefCode}`,
+        {
+          headers: {
+            "X-API-KEY": "8FzX5qLmN3wRtKjH7vCyP9bGdEaU4sYpT6cMfZnJ",
+          },
+        }
+      )
+      const data = await res.json()
+      setPopulationData(prev => new Map(prev).set(prefCode, data.result))
+    } catch {
+      setError(`都道府県${prefCode}の人口データ取得に失敗しました`)
+    } finally {
+      setPopulationLoading(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(prefCode)
+        return newSet
+      })
+    }
+  }
+
+  const handlePrefectureToggle = async (prefCode: number) => {
+    setSelectedPrefs(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(prefCode)) {
+        newSet.delete(prefCode)
+      } else {
+        newSet.add(prefCode)
+        fetchPopulationData(prefCode)
+      }
+      return newSet
+    })
+  }
+
   if (loading) return <p>読み込み中...</p>
 
   if (error) return <p>エラー: {error}</p>
 
 
   return (
-    <ul>
-      {prefs.map((p) => (
-        <li key={p.prefCode}>
-          {p.prefCode}: {p.prefName}
-        </li>
-      ))}
-    </ul>
+    <div>
+      <h2>都道府県を選択してください</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px' }}>
+        {prefs.map((prefecture) => (
+          <label key={prefecture.prefCode} style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: populationLoading.has(prefecture.prefCode) ? 0.7 : 1 }}>
+            <input
+              type="checkbox"
+              checked={selectedPrefs.has(prefecture.prefCode)}
+              onChange={() => handlePrefectureToggle(prefecture.prefCode)}
+              disabled={populationLoading.has(prefecture.prefCode)}
+            />
+            <span>{prefecture.prefName}</span>
+            {populationLoading.has(prefecture.prefCode) && <span style={{ fontSize: '12px', color: '#666' }}>読み込み中...</span>}
+          </label>
+        ))}
+      </div>
+    </div>
   )
 }

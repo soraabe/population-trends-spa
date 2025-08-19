@@ -12,11 +12,9 @@
 ### Format
 ```
 <type>(<scope>): <description>
-
-[optional body]
-
-[optional footer]
 ```
+
+コミットメッセージは簡潔に日本語で1行で記述する。詳細な説明はPull Requestの説明欄に記載する。
 
 ### Types
 - **feat**: 新機能の追加
@@ -35,10 +33,10 @@
 
 ### Examples
 ```
-feat(ui): add population trend chart component
-fix(api): handle null data in population endpoint
-docs: update README with setup instructions
-chore(deps): update React to v19
+feat(ui): 都道府県選択チェックボックスを追加
+fix(api): エンドポイントのnullデータを処理
+docs: READMEを更新
+chore(deps): React v19に更新
 ```
 
 ## Pull Request Rules
