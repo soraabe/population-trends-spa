@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react"
 import type { Prefecture, PopulationResponse } from "../types/api"
 
-export default function PrefectureList() {
+type PrefectureListProps = {
+  onPrefecturesChange: (prefectures: Prefecture[]) => void
+  onSelectionChange: (selectedPrefs: Set<number>) => void
+  onDataChange: (populationData: Map<number, PopulationResponse>) => void
+}
+
+export default function PrefectureList({ onPrefecturesChange, onSelectionChange, onDataChange }: PrefectureListProps) {
   const [prefs, setPrefs] = useState<Prefecture[]>([])
   const [selectedPrefs, setSelectedPrefs] = useState<Set<number>>(new Set())
   const [populationData, setPopulationData] = useState<Map<number, PopulationResponse>>(new Map())
@@ -24,6 +30,7 @@ export default function PrefectureList() {
         )
         const data = await res.json()
         setPrefs(data.result)
+        onPrefecturesChange(data.result)
 
       } catch {
         setError("都道府県データの取得に失敗しました")
@@ -50,7 +57,9 @@ export default function PrefectureList() {
         }
       )
       const data = await res.json()
-      setPopulationData(prev => new Map(prev).set(prefCode, data.result))
+      const newData = new Map(populationData).set(prefCode, data.result)
+      setPopulationData(newData)
+      onDataChange(newData)
     } catch {
       setError(`都道府県${prefCode}の人口データ取得に失敗しました`)
     } finally {
@@ -71,6 +80,7 @@ export default function PrefectureList() {
         newSet.add(prefCode)
         fetchPopulationData(prefCode)
       }
+      onSelectionChange(newSet)
       return newSet
     })
   }
