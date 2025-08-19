@@ -29,7 +29,7 @@ export default function PopulationChart({ data, selectedPrefs, prefectures }: Po
   // グラフ用のデータを準備
   const prepareChartData = () => {
     const years = new Set<number>()
-    const chartData: { [key: string]: any }[] = []
+    const chartData: { [key: string]: number | string }[] = []
 
     // 全ての年を収集
     Array.from(selectedPrefs).forEach(prefCode => {
@@ -47,7 +47,7 @@ export default function PopulationChart({ data, selectedPrefs, prefectures }: Po
 
     // チャートデータを構築
     sortedYears.forEach(year => {
-      const yearData: { [key: string]: any } = { year }
+      const yearData: { [key: string]: number | string } = { year }
       
       Array.from(selectedPrefs).forEach(prefCode => {
         const pref = prefectures.find(p => p.prefCode === prefCode)

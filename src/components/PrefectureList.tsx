@@ -40,7 +40,7 @@ export default function PrefectureList({ onPrefecturesChange, onSelectionChange,
       }
     }
     fetchPrefectures()
-  }, [])
+  }, [onPrefecturesChange])
 
   const fetchPopulationData = async (prefCode: number) => {
     if (populationData.has(prefCode)) return
