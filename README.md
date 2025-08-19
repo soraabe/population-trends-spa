@@ -1,69 +1,88 @@
-# React + TypeScript + Vite
+# 都道府県別人口推移グラフ
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ゆめみフロントエンドコーディング試験の課題として作成した、都道府県別の人口推移をグラフで表示するSPA(Single Page Application)です。
 
-Currently, two official plugins are available:
+## 🌟 機能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ✅ 都道府県一覧のチェックボックス選択
+- 📊 人口推移グラフの表示（Recharts使用）
+- 🔄 人口種別の切り替え（総人口/年少人口/生産年齢人口/老年人口）
+- 📱 レスポンシブデザイン対応
+- 🎨 複数都道府県の同時比較表示
 
-## Expanding the ESLint configuration
+## 🚀 デプロイ
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **本番環境**: https://population-trends-spa.vercel.app (mainブランチから自動デプロイ)
+- **プレビュー**: PRごとに自動でプレビューURLが生成されます
 
-```js
-export default tseslint.config([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
+## 🛠️ 技術スタック
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **フロントエンド**: React 19 + TypeScript
+- **グラフライブラリ**: Recharts
+- **ビルドツール**: Vite
+- **リンター**: ESLint + Prettier
+- **テスト**: Vitest + Testing Library
+- **デプロイ**: Vercel + GitHub Actions
+- **API**: ゆめみフロントエンドコーディング試験 API
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+## 📦 セットアップ
+
+```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバーの起動
+npm run dev
+
+# ビルド
+npm run build
+
+# テスト実行
+npm test
+
+# リント
+npm run lint
+
+# フォーマット
+npm run format
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🧪 CI/CD
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+GitHub Actionsにより以下が自動実行されます：
 
-export default tseslint.config([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+1. **テスト・品質チェック** (すべてのプッシュ・PR)
+   - TypeScript型チェック
+   - ESLint実行
+   - Prettier確認
+   - ユニットテスト実行
+   - ビルドテスト
+
+2. **デプロイ** (mainブランチへのプッシュ時)
+   - Vercelへの本番デプロイ
+   - 自動でURLが更新
+
+## 📱 対応環境
+
+- Google Chrome最新版
+- PC・スマートフォン表示対応
+
+## 🏗️ アーキテクチャ
+
 ```
+src/
+├── components/          # Reactコンポーネント
+│   ├── PrefectureList.tsx    # 都道府県選択
+│   ├── PopulationChart.tsx   # グラフ表示
+│   └── __tests__/           # テストファイル
+├── types/              # TypeScript型定義
+│   └── api.ts
+├── lib/               # ユーティリティ関数
+└── App.tsx           # メインアプリケーション
+```
+
+## 📊 API仕様
+
+ゆめみフロントエンドコーディング試験APIを使用：
+- 都道府県一覧取得: `/api/v1/prefectures`
+- 人口構成取得: `/api/v1/population/composition/perYear`
