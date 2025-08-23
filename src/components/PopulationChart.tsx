@@ -110,6 +110,7 @@ export default function PopulationChart({
     >
       <div style={{ marginBottom: isMobile ? '15px' : '20px' }}>
         <h2
+          id="chart-title"
           style={{
             fontSize: isMobile ? '1.2rem' : '1.5rem',
             marginBottom: '10px',
@@ -117,65 +118,72 @@ export default function PopulationChart({
         >
           人口推移グラフ
         </h2>
-        <div
-          style={{
-            marginTop: '10px',
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            alignItems: isMobile ? 'flex-start' : 'center',
-            gap: isMobile ? '8px' : '0',
-          }}
-        >
-          <label
+        <form>
+          <fieldset
             style={{
-              marginRight: isMobile ? '0' : '10px',
-              fontWeight: 'bold',
-              fontSize: isMobile ? '0.9rem' : '1rem',
-            }}
-          >
-            人口種別:
-          </label>
-          <div
-            style={{
+              border: 'none',
+              padding: 0,
+              margin: 0,
+              marginTop: '10px',
               display: 'flex',
               flexDirection: isMobile ? 'column' : 'row',
-              gap: isMobile ? '5px' : '0',
+              alignItems: isMobile ? 'flex-start' : 'center',
+              gap: isMobile ? '8px' : '0',
             }}
           >
-            {(
-              [
-                '総人口',
-                '年少人口',
-                '生産年齢人口',
-                '老年人口',
-              ] as PopulationType[]
-            ).map(type => (
-              <label
-                key={type}
-                style={{
-                  margin: isMobile ? '0' : '0 10px',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.9rem' : '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <input
-                  type="radio"
-                  id={`population-type-${type}`}
-                  name="populationType"
-                  value={type}
-                  checked={selectedType === type}
-                  onChange={e =>
-                    setSelectedType(e.target.value as PopulationType)
-                  }
-                  style={{ marginRight: '5px' }}
-                />
-                {type}
-              </label>
-            ))}
-          </div>
-        </div>
+            <legend
+              style={{
+                marginRight: isMobile ? '0' : '10px',
+                fontWeight: 'bold',
+                fontSize: isMobile ? '0.9rem' : '1rem',
+                marginBottom: isMobile ? '5px' : '0',
+              }}
+            >
+              人口種別:
+            </legend>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
+                gap: isMobile ? '5px' : '0',
+              }}
+            >
+              {(
+                [
+                  '総人口',
+                  '年少人口',
+                  '生産年齢人口',
+                  '老年人口',
+                ] as PopulationType[]
+              ).map(type => (
+                <label
+                  key={type}
+                  htmlFor={`population-type-${type}`}
+                  style={{
+                    margin: isMobile ? '0' : '0 10px',
+                    cursor: 'pointer',
+                    fontSize: isMobile ? '0.9rem' : '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <input
+                    type="radio"
+                    id={`population-type-${type}`}
+                    name="populationType"
+                    value={type}
+                    checked={selectedType === type}
+                    onChange={e =>
+                      setSelectedType(e.target.value as PopulationType)
+                    }
+                    style={{ marginRight: '5px' }}
+                  />
+                  {type}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </form>
       </div>
 
       <ResponsiveContainer width="100%" height={isMobile ? 300 : 400}>

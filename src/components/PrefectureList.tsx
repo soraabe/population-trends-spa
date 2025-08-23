@@ -108,6 +108,7 @@ export default function PrefectureList({
   return (
     <div>
       <h2
+        id="prefecture-title"
         style={{
           fontSize: isMobile ? '1.2rem' : '1.5rem',
           marginBottom: isMobile ? '15px' : '20px',
@@ -115,49 +116,64 @@ export default function PrefectureList({
       >
         都道府県を選択してください
       </h2>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile
-            ? 'repeat(auto-fill, minmax(120px, 1fr))'
-            : 'repeat(auto-fill, minmax(140px, 1fr))',
-          gap: isMobile ? '6px' : '8px',
-        }}
-      >
-        {prefs.map(prefecture => (
-          <label
-            key={prefecture.prefCode}
+      <form>
+        <fieldset
+          style={{
+            border: 'none',
+            padding: 0,
+            margin: 0,
+          }}
+        >
+          <legend style={{ position: 'absolute', left: '-9999px' }}>
+            都道府県選択
+          </legend>
+          <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
+              display: 'grid',
+              gridTemplateColumns: isMobile
+                ? 'repeat(auto-fill, minmax(120px, 1fr))'
+                : 'repeat(auto-fill, minmax(140px, 1fr))',
               gap: isMobile ? '6px' : '8px',
-              opacity: populationLoading.has(prefecture.prefCode) ? 0.7 : 1,
-              fontSize: isMobile ? '0.9rem' : '1rem',
-              padding: isMobile ? '4px' : '0',
             }}
           >
-            <input
-              type="checkbox"
-              id={`prefecture-${prefecture.prefCode}`}
-              name={`prefecture-${prefecture.prefCode}`}
-              checked={selectedPrefs.has(prefecture.prefCode)}
-              onChange={() => handlePrefectureToggle(prefecture.prefCode)}
-              disabled={populationLoading.has(prefecture.prefCode)}
-            />
-            <span>{prefecture.prefName}</span>
-            {populationLoading.has(prefecture.prefCode) && (
-              <span
+            {prefs.map(prefecture => (
+              <label
+                key={prefecture.prefCode}
+                htmlFor={`prefecture-${prefecture.prefCode}`}
                 style={{
-                  fontSize: isMobile ? '10px' : '12px',
-                  color: '#666',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: isMobile ? '6px' : '8px',
+                  opacity: populationLoading.has(prefecture.prefCode) ? 0.7 : 1,
+                  fontSize: isMobile ? '0.9rem' : '1rem',
+                  padding: isMobile ? '4px' : '0',
+                  cursor: 'pointer',
                 }}
               >
-                読み込み中...
-              </span>
-            )}
-          </label>
-        ))}
-      </div>
+                <input
+                  type="checkbox"
+                  id={`prefecture-${prefecture.prefCode}`}
+                  name={`prefecture-${prefecture.prefCode}`}
+                  checked={selectedPrefs.has(prefecture.prefCode)}
+                  onChange={() => handlePrefectureToggle(prefecture.prefCode)}
+                  disabled={populationLoading.has(prefecture.prefCode)}
+                />
+                <span>{prefecture.prefName}</span>
+                {populationLoading.has(prefecture.prefCode) && (
+                  <span
+                    style={{
+                      fontSize: isMobile ? '10px' : '12px',
+                      color: '#666',
+                    }}
+                  >
+                    読み込み中...
+                  </span>
+                )}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </form>
     </div>
   )
 }
