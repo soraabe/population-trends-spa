@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import PrefectureList from './components/PrefectureList'
 import PopulationChart from './components/PopulationChart'
+import { useResponsive } from './hooks/useResponsive'
 import type { PopulationResponse, Prefecture } from './types/api'
 import './App.css'
 
@@ -10,16 +11,7 @@ function App() {
     Map<number, PopulationResponse>
   >(new Map())
   const [prefectures, setPrefectures] = useState<Prefecture[]>([])
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768)
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  const isMobile = useResponsive(768)
 
   const handlePrefecturesChange = useCallback(
     (newPrefectures: Prefecture[]) => {

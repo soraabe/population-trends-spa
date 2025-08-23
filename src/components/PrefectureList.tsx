@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { usePrefectures } from '../hooks/usePrefectures'
+import { usePopulationData } from '../hooks/usePopulationData'
 import type { Prefecture, PopulationResponse } from '../types/api'
 
 type PrefectureListProps = {
@@ -14,74 +16,32 @@ export default function PrefectureList({
   onDataChange,
   isMobile,
 }: PrefectureListProps) {
-  const [prefs, setPrefs] = useState<Prefecture[]>([])
+  const { prefectures, loading, error: prefError } = usePrefectures()
+  const { 
+    populationData, 
+    loadingPrefs, 
+    error: popError, 
+    fetchPopulationData 
+  } = usePopulationData()
   const [selectedPrefs, setSelectedPrefs] = useState<Set<number>>(new Set())
-  const [populationData, setPopulationData] = useState<
-    Map<number, PopulationResponse>
-  >(new Map())
-  const [loading, setLoading] = useState(true)
-  const [populationLoading, setPopulationLoading] = useState<Set<number>>(
-    new Set(),
-  )
-  const [error, setError] = useState<string | null>(null)
+  const error = prefError || popError
 
+  // prefectures が更新されたら親コンポーネントに通知
   useEffect(() => {
-    const fetchPrefectures = async () => {
-      try {
-        const res = await fetch(
-          'https://yumemi-frontend-engineer-codecheck-api.vercel.app/api/v1/prefectures',
-          {
-            headers: {
-              'X-API-KEY': '8FzX5qLmN3wRtKjH7vCyP9bGdEaU4sYpT6cMfZnJ',
-            },
-          },
-        )
-        const data = await res.json()
-        setPrefs(data.result)
-      } catch {
-        setError('都道府県データの取得に失敗しました')
-      } finally {
-        setLoading(false)
-      }
+    if (prefectures.length > 0) {
+      onPrefecturesChange(prefectures)
     }
-    fetchPrefectures()
-  }, [])
+  }, [prefectures, onPrefecturesChange])
 
-  // prefsが更新されたら親コンポーネントに通知
+  // populationData が更新されたら親コンポーネントに通知
   useEffect(() => {
-    if (prefs.length > 0) {
-      onPrefecturesChange(prefs)
-    }
-  }, [prefs, onPrefecturesChange])
+    onDataChange(populationData)
+  }, [populationData, onDataChange])
 
-  const fetchPopulationData = async (prefCode: number) => {
-    if (populationData.has(prefCode)) return
-
-    setPopulationLoading(prev => new Set(prev).add(prefCode))
-
-    try {
-      const res = await fetch(
-        `https://yumemi-frontend-engineer-codecheck-api.vercel.app/api/v1/population/composition/perYear?cityCode=-&prefCode=${prefCode}`,
-        {
-          headers: {
-            'X-API-KEY': '8FzX5qLmN3wRtKjH7vCyP9bGdEaU4sYpT6cMfZnJ',
-          },
-        },
-      )
-      const data = await res.json()
-      const newData = new Map(populationData).set(prefCode, data.result)
-      setPopulationData(newData)
-      onDataChange(newData)
-    } catch {
-      setError(`都道府県${prefCode}の人口データ取得に失敗しました`)
-    } finally {
-      setPopulationLoading(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(prefCode)
-        return newSet
-      })
-    }
-  }
+  // selectedPrefsの変更を親に通知
+  useEffect(() => {
+    onSelectionChange(selectedPrefs)
+  }, [selectedPrefs, onSelectionChange])
 
   const handlePrefectureToggle = async (prefCode: number) => {
     setSelectedPrefs(prev => {
@@ -95,11 +55,6 @@ export default function PrefectureList({
       return newSet
     })
   }
-
-  // selectedPrefsの変更を親に通知
-  useEffect(() => {
-    onSelectionChange(selectedPrefs)
-  }, [selectedPrefs, onSelectionChange])
 
   if (loading) return <p>読み込み中...</p>
 
@@ -136,7 +91,7 @@ export default function PrefectureList({
               gap: isMobile ? '6px' : '8px',
             }}
           >
-            {prefs.map(prefecture => (
+            {prefectures.map(prefecture => (
               <label
                 key={prefecture.prefCode}
                 htmlFor={`prefecture-${prefecture.prefCode}`}
@@ -144,7 +99,7 @@ export default function PrefectureList({
                   display: 'flex',
                   alignItems: 'center',
                   gap: isMobile ? '6px' : '8px',
-                  opacity: populationLoading.has(prefecture.prefCode) ? 0.7 : 1,
+                  opacity: loadingPrefs.has(prefecture.prefCode) ? 0.7 : 1,
                   fontSize: isMobile ? '0.9rem' : '1rem',
                   padding: isMobile ? '4px' : '0',
                   cursor: 'pointer',
@@ -156,10 +111,10 @@ export default function PrefectureList({
                   name={`prefecture-${prefecture.prefCode}`}
                   checked={selectedPrefs.has(prefecture.prefCode)}
                   onChange={() => handlePrefectureToggle(prefecture.prefCode)}
-                  disabled={populationLoading.has(prefecture.prefCode)}
+                  disabled={loadingPrefs.has(prefecture.prefCode)}
                 />
                 <span>{prefecture.prefName}</span>
-                {populationLoading.has(prefecture.prefCode) && (
+                {loadingPrefs.has(prefecture.prefCode) && (
                   <span
                     style={{
                       fontSize: isMobile ? '10px' : '12px',
