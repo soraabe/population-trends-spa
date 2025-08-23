@@ -11,7 +11,7 @@ function App() {
     Map<number, PopulationResponse>
   >(new Map())
   const [prefectures, setPrefectures] = useState<Prefecture[]>([])
-  const isMobile = useResponsive(768)
+  const isMobile = useResponsive(700)
 
   const handlePrefecturesChange = useCallback(
     (newPrefectures: Prefecture[]) => {
@@ -53,54 +53,47 @@ function App() {
 
       <div
         style={{
-          display: isMobile ? 'flex' : 'grid',
-          flexDirection: isMobile ? 'column' : undefined,
-          gridTemplateColumns: isMobile ? undefined : '1fr 2fr',
+          display: 'flex',
+          flexDirection: 'column',
           gap: '20px',
           marginTop: '20px',
+          // デスクトップではgridレイアウトに切り替え
+          ...(isMobile ? {} : {
+            display: 'grid',
+            gridTemplateColumns: '1fr 2fr',
+            flexDirection: undefined,
+          }),
         }}
       >
-        {isMobile ? (
-          // モバイル: グラフを上、都道府県選択を下に
-          <>
-            <section aria-labelledby="chart-title">
-              <PopulationChart
-                data={populationData}
-                selectedPrefs={selectedPrefs}
-                prefectures={prefectures}
-                isMobile={isMobile}
-              />
-            </section>
-            <section aria-labelledby="prefecture-title">
-              <PrefectureList
-                onPrefecturesChange={handlePrefecturesChange}
-                onSelectionChange={handleSelectionChange}
-                onDataChange={handleDataChange}
-                isMobile={isMobile}
-              />
-            </section>
-          </>
-        ) : (
-          // デスクトップ: 都道府県選択を左、グラフを右に
-          <>
-            <section aria-labelledby="prefecture-title">
-              <PrefectureList
-                onPrefecturesChange={handlePrefecturesChange}
-                onSelectionChange={handleSelectionChange}
-                onDataChange={handleDataChange}
-                isMobile={isMobile}
-              />
-            </section>
-            <section aria-labelledby="chart-title">
-              <PopulationChart
-                data={populationData}
-                selectedPrefs={selectedPrefs}
-                prefectures={prefectures}
-                isMobile={isMobile}
-              />
-            </section>
-          </>
-        )}
+        {/* 都道府県選択: モバイル時は2番目、デスクトップ時は1番目 */}
+        <section 
+          aria-labelledby="prefecture-title"
+          style={{
+            order: isMobile ? 2 : 1,
+          }}
+        >
+          <PrefectureList
+            onPrefecturesChange={handlePrefecturesChange}
+            onSelectionChange={handleSelectionChange}
+            onDataChange={handleDataChange}
+            isMobile={isMobile}
+          />
+        </section>
+        
+        {/* グラフ: モバイル時は1番目、デスクトップ時は2番目 */}
+        <section 
+          aria-labelledby="chart-title"
+          style={{
+            order: isMobile ? 1 : 2,
+          }}
+        >
+          <PopulationChart
+            data={populationData}
+            selectedPrefs={selectedPrefs}
+            prefectures={prefectures}
+            isMobile={isMobile}
+          />
+        </section>
       </div>
     </main>
   )
