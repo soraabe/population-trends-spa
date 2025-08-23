@@ -5,7 +5,9 @@ import App from '../../App'
 describe('App', () => {
   it('should render application title', () => {
     render(<App />)
-    expect(screen.getByRole('heading', { name: '都道府県別人口推移グラフ' })).toBeDefined()
+    expect(
+      screen.getByRole('heading', { name: '都道府県別人口推移グラフ' }),
+    ).toBeDefined()
   })
 
   it('should render application layout', () => {

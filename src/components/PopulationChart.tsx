@@ -1,22 +1,45 @@
-import { useState } from "react"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import type { PopulationResponse } from "../types/api"
+import { useState } from 'react'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts'
+import type { PopulationResponse } from '../types/api'
 
 type PopulationChartProps = {
   data: Map<number, PopulationResponse>
   selectedPrefs: Set<number>
   prefectures: Array<{ prefCode: number; prefName: string }>
+  isMobile: boolean
 }
 
-type PopulationType = "総人口" | "年少人口" | "生産年齢人口" | "老年人口"
+type PopulationType = '総人口' | '年少人口' | '生産年齢人口' | '老年人口'
 
 const COLORS = [
-  "#8884d8", "#82ca9d", "#ffc658", "#ff7c7c", "#8dd1e1", 
-  "#d084d0", "#87ceeb", "#dda0dd", "#98fb98", "#f0e68c"
+  '#8884d8',
+  '#82ca9d',
+  '#ffc658',
+  '#ff7c7c',
+  '#8dd1e1',
+  '#d084d0',
+  '#87ceeb',
+  '#dda0dd',
+  '#98fb98',
+  '#f0e68c',
 ]
 
-export default function PopulationChart({ data, selectedPrefs, prefectures }: PopulationChartProps) {
-  const [selectedType, setSelectedType] = useState<PopulationType>("総人口")
+export default function PopulationChart({
+  data,
+  selectedPrefs,
+  prefectures,
+  isMobile,
+}: PopulationChartProps) {
+  const [selectedType, setSelectedType] = useState<PopulationType>('総人口')
 
   if (selectedPrefs.size === 0) {
     return (
@@ -48,20 +71,22 @@ export default function PopulationChart({ data, selectedPrefs, prefectures }: Po
     // チャートデータを構築
     sortedYears.forEach(year => {
       const yearData: { [key: string]: number | string } = { year }
-      
+
       Array.from(selectedPrefs).forEach(prefCode => {
         const pref = prefectures.find(p => p.prefCode === prefCode)
         const populationData = data.get(prefCode)
-        
+
         if (pref && populationData) {
-          const series = populationData.data.find(s => s.label === selectedType)
+          const series = populationData.data.find(
+            s => s.label === selectedType,
+          )
           const dataPoint = series?.data.find(item => item.year === year)
           if (dataPoint) {
             yearData[pref.prefName] = dataPoint.value
           }
         }
       })
-      
+
       chartData.push(yearData)
     })
 
@@ -70,36 +95,107 @@ export default function PopulationChart({ data, selectedPrefs, prefectures }: Po
 
   const chartData = prepareChartData()
   const selectedPrefNames = Array.from(selectedPrefs)
-    .map(prefCode => prefectures.find(p => p.prefCode === prefCode)?.prefName)
+    .map(
+      prefCode => prefectures.find(p => p.prefCode === prefCode)?.prefName,
+    )
     .filter(Boolean)
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <h2>人口推移グラフ</h2>
-        <div style={{ marginTop: '10px' }}>
-          <label style={{ marginRight: '10px', fontWeight: 'bold' }}>人口種別:</label>
-          {(["総人口", "年少人口", "生産年齢人口", "老年人口"] as PopulationType[]).map(type => (
-            <label key={type} style={{ margin: '0 10px', cursor: 'pointer' }}>
-              <input
-                type="radio"
-                name="populationType"
-                value={type}
-                checked={selectedType === type}
-                onChange={(e) => setSelectedType(e.target.value as PopulationType)}
-                style={{ marginRight: '5px' }}
-              />
-              {type}
-            </label>
-          ))}
+    <div
+      style={{
+        width: '100%',
+        padding: isMobile ? '10px' : '20px',
+        boxSizing: 'border-box',
+      }}
+    >
+      <div style={{ marginBottom: isMobile ? '15px' : '20px' }}>
+        <h2
+          style={{
+            fontSize: isMobile ? '1.2rem' : '1.5rem',
+            marginBottom: '10px',
+          }}
+        >
+          人口推移グラフ
+        </h2>
+        <div
+          style={{
+            marginTop: '10px',
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: isMobile ? 'flex-start' : 'center',
+            gap: isMobile ? '8px' : '0',
+          }}
+        >
+          <label
+            style={{
+              marginRight: isMobile ? '0' : '10px',
+              fontWeight: 'bold',
+              fontSize: isMobile ? '0.9rem' : '1rem',
+            }}
+          >
+            人口種別:
+          </label>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              gap: isMobile ? '5px' : '0',
+            }}
+          >
+            {(
+              [
+                '総人口',
+                '年少人口',
+                '生産年齢人口',
+                '老年人口',
+              ] as PopulationType[]
+            ).map(type => (
+              <label
+                key={type}
+                style={{
+                  margin: isMobile ? '0' : '0 10px',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.9rem' : '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <input
+                  type="radio"
+                  id={`population-type-${type}`}
+                  name="populationType"
+                  value={type}
+                  checked={selectedType === type}
+                  onChange={e =>
+                    setSelectedType(e.target.value as PopulationType)
+                  }
+                  style={{ marginRight: '5px' }}
+                />
+                {type}
+              </label>
+            ))}
+          </div>
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+      <ResponsiveContainer width="100%" height={isMobile ? 300 : 400}>
+        <LineChart
+          data={chartData}
+          margin={{
+            top: 5,
+            right: isMobile ? 15 : 30,
+            left: isMobile ? 10 : 20,
+            bottom: 5,
+          }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" />
-          <YAxis />
+          <XAxis dataKey="year" fontSize={isMobile ? 12 : 14} />
+          <YAxis
+            fontSize={isMobile ? 12 : 14}
+            tickFormatter={value =>
+              typeof value === 'number' ? value.toLocaleString() : value
+            }
+          />
           <Tooltip />
           <Legend />
           {selectedPrefNames.map((prefName, index) => (
@@ -109,7 +205,7 @@ export default function PopulationChart({ data, selectedPrefs, prefectures }: Po
               dataKey={prefName}
               stroke={COLORS[index % COLORS.length]}
               strokeWidth={2}
-              dot={{ r: 4 }}
+              dot={{ r: 3 }}
             />
           ))}
         </LineChart>
