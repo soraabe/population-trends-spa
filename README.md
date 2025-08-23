@@ -84,5 +84,6 @@ src/
 ## 📊 API仕様
 
 ゆめみフロントエンドコーディング試験APIを使用：
+
 - 都道府県一覧取得: `/api/v1/prefectures`
 - 人口構成取得: `/api/v1/population/composition/perYear`
