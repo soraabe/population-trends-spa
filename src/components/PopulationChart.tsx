@@ -33,6 +33,46 @@ const COLORS = [
   '#f0e68c',
 ]
 
+// カスタムツールチップコンポーネント
+type TooltipPayload = {
+  dataKey: string
+  value: number
+  color: string
+}
+
+type CustomTooltipProps = {
+  active?: boolean
+  payload?: TooltipPayload[]
+  label?: string
+}
+
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        style={{
+          backgroundColor: 'white',
+          padding: '8px 12px',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        }}
+      >
+        {/* 年を上部に表示 */}
+        <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#333' }}>
+          {label}年
+        </div>
+        {payload.map((entry: TooltipPayload, index: number) => (
+          <div key={index} style={{ color: entry.color, margin: 0 }}>
+            {entry.dataKey}: {entry.value?.toLocaleString()}人
+          </div>
+        ))}
+      </div>
+    )
+  }
+  return null
+}
+
 export default function PopulationChart({
   data,
   selectedPrefs,
@@ -204,7 +244,7 @@ export default function PopulationChart({
               typeof value === 'number' ? value.toLocaleString() : value
             }
           />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
           <Legend />
           {selectedPrefNames.map((prefName, index) => (
             <Line
