@@ -34,7 +34,19 @@ const COLORS = [
 ]
 
 // カスタムツールチップコンポーネント
-function CustomTooltip({ active, payload, label }: any) {
+type TooltipPayload = {
+  dataKey: string
+  value: number
+  color: string
+}
+
+type CustomTooltipProps = {
+  active?: boolean
+  payload?: TooltipPayload[]
+  label?: string
+}
+
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     return (
       <div
@@ -50,7 +62,7 @@ function CustomTooltip({ active, payload, label }: any) {
         <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#333' }}>
           {label}年
         </div>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: TooltipPayload, index: number) => (
           <div key={index} style={{ color: entry.color, margin: 0 }}>
             {entry.dataKey}: {entry.value?.toLocaleString()}人
           </div>
