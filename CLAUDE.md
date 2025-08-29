@@ -15,7 +15,7 @@
 <type>(<scope>): <description>
 ```
 
-コミットメッセージは簡潔に日本語で1行で記述する。詳細な説明はPull Requestの説明欄に記載する。
+コミットメッセージは簡潔に日本語で1行で記述する。Co-Authored-ByやGenerated withなどの付加情報は追加しない。詳細な説明はPull Requestの説明欄に記載する。
 
 ### Types
 

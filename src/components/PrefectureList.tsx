@@ -1,62 +1,27 @@
-import { useEffect, useState } from 'react'
-import { usePrefectures } from '../hooks/usePrefectures'
-import { usePopulationData } from '../hooks/usePopulationData'
-import type { Prefecture, PopulationResponse } from '../types/api'
+import type { Prefecture } from '../types/api'
 
 type PrefectureListProps = {
-  onPrefecturesChange: (prefectures: Prefecture[]) => void
-  onSelectionChange: (selectedPrefs: Set<number>) => void
-  onDataChange: (populationData: Map<number, PopulationResponse>) => void
+  prefectures: Prefecture[]
+  selectedPrefs: Set<number>
+  loadingPrefs: boolean
+  loadingPopulation: Set<number>
+  error: string | null
+  onTogglePrefecture: (prefCode: number) => void
+  onClearSelection: () => void
   isMobile: boolean
 }
 
 export default function PrefectureList({
-  onPrefecturesChange,
-  onSelectionChange,
-  onDataChange,
+  prefectures,
+  selectedPrefs,
+  loadingPrefs,
+  loadingPopulation,
+  error,
+  onTogglePrefecture,
+  onClearSelection,
   isMobile,
 }: PrefectureListProps) {
-  const { prefectures, loading, error: prefError } = usePrefectures()
-  const { 
-    populationData, 
-    loadingPrefs, 
-    error: popError, 
-    fetchPopulationData 
-  } = usePopulationData()
-  const [selectedPrefs, setSelectedPrefs] = useState<Set<number>>(new Set())
-  const error = prefError || popError
-
-  // prefectures が更新されたら親コンポーネントに通知
-  useEffect(() => {
-    if (prefectures.length > 0) {
-      onPrefecturesChange(prefectures)
-    }
-  }, [prefectures, onPrefecturesChange])
-
-  // populationData が更新されたら親コンポーネントに通知
-  useEffect(() => {
-    onDataChange(populationData)
-  }, [populationData, onDataChange])
-
-  // selectedPrefsの変更を親に通知
-  useEffect(() => {
-    onSelectionChange(selectedPrefs)
-  }, [selectedPrefs, onSelectionChange])
-
-  const handlePrefectureToggle = async (prefCode: number) => {
-    setSelectedPrefs(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(prefCode)) {
-        newSet.delete(prefCode)
-      } else {
-        newSet.add(prefCode)
-        fetchPopulationData(prefCode)
-      }
-      return newSet
-    })
-  }
-
-  if (loading) return <p>読み込み中...</p>
+  if (loadingPrefs) return <p>読み込み中...</p>
 
   if (error) return <p>エラー: {error}</p>
 
@@ -71,6 +36,23 @@ export default function PrefectureList({
       >
         都道府県を選択してください
       </h2>
+      {selectedPrefs.size > 0 && (
+        <button
+          type="button"
+          onClick={onClearSelection}
+          style={{
+            padding: '8px 16px',
+            marginBottom: '15px',
+            backgroundColor: '#f0f0f0',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: isMobile ? '0.8rem' : '0.9rem',
+          }}
+        >
+          全て解除 ({selectedPrefs.size}件選択中)
+        </button>
+      )}
       <form>
         <fieldset
           style={{
@@ -99,7 +81,7 @@ export default function PrefectureList({
                   display: 'flex',
                   alignItems: 'center',
                   gap: isMobile ? '6px' : '8px',
-                  opacity: loadingPrefs.has(prefecture.prefCode) ? 0.7 : 1,
+                  opacity: loadingPopulation.has(prefecture.prefCode) ? 0.7 : 1,
                   fontSize: isMobile ? '0.9rem' : '1rem',
                   padding: isMobile ? '4px' : '0',
                   cursor: 'pointer',
@@ -110,11 +92,11 @@ export default function PrefectureList({
                   id={`prefecture-${prefecture.prefCode}`}
                   name={`prefecture-${prefecture.prefCode}`}
                   checked={selectedPrefs.has(prefecture.prefCode)}
-                  onChange={() => handlePrefectureToggle(prefecture.prefCode)}
-                  disabled={loadingPrefs.has(prefecture.prefCode)}
+                  onChange={() => onTogglePrefecture(prefecture.prefCode)}
+                  disabled={loadingPopulation.has(prefecture.prefCode)}
                 />
                 <span>{prefecture.prefName}</span>
-                {loadingPrefs.has(prefecture.prefCode) && (
+                {loadingPopulation.has(prefecture.prefCode) && (
                   <span
                     style={{
                       fontSize: isMobile ? '10px' : '12px',
