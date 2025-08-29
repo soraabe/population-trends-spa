@@ -52,18 +52,27 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
         <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#333' }}>
           {label}年
         </div>
-        {payload.map((entry: TooltipPayload, index: number) => {
-          // dataKeyから _solid, _dashed を除去して表示名を作成
-          const displayName = String(entry.dataKey)
-            .replace(/_solid$/, '')
-            .replace(/_dashed$/, '')
+        {(() => {
+          // 重複する種別を統合（_solid, _dashedの同名を1つにまとめる）
+          const uniqueEntries = new Map<string, TooltipPayload>()
           
-          return (
-            <div key={index} style={{ color: entry.color, margin: 0 }}>
-              {displayName}: {entry.value?.toLocaleString()}人
+          payload.forEach(entry => {
+            const displayName = String(entry.dataKey)
+              .replace(/_solid$/, '')
+              .replace(/_dashed$/, '')
+            
+            // 同じ種別が既に存在する場合は、より大きい値を採用（通常は同じ値）
+            if (!uniqueEntries.has(displayName) || (uniqueEntries.get(displayName)?.value || 0) < entry.value) {
+              uniqueEntries.set(displayName, { ...entry, dataKey: displayName })
+            }
+          })
+          
+          return Array.from(uniqueEntries.values()).map((entry) => (
+            <div key={entry.dataKey} style={{ color: entry.color, margin: 0 }}>
+              {entry.dataKey}: {entry.value?.toLocaleString()}人
             </div>
-          )
-        })}
+          ))
+        })()}
       </div>
     )
   }
