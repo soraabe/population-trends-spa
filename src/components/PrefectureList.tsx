@@ -43,9 +43,11 @@ export default function PrefectureList({
           style={{
             padding: '8px 16px',
             marginBottom: '15px',
+
             backgroundColor: '#333',
             color: '#fff',
             border: '1px solid #333',
+
             borderRadius: '4px',
             cursor: 'pointer',
             fontSize: isMobile ? '0.8rem' : '0.9rem',
