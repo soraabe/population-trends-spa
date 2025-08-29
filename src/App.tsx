@@ -1,35 +1,21 @@
-import { useState, useCallback } from 'react'
 import PrefectureList from './components/PrefectureList'
 import PopulationChart from './components/PopulationChart'
 import { useResponsive } from './hooks/useResponsive'
-import type { PopulationResponse, Prefecture } from './types/api'
+import { usePopulationApp } from './hooks/usePopulationApp'
 import './App.css'
 
 function App() {
-  const [selectedPrefs, setSelectedPrefs] = useState<Set<number>>(new Set())
-  const [populationData, setPopulationData] = useState<
-    Map<number, PopulationResponse>
-  >(new Map())
-  const [prefectures, setPrefectures] = useState<Prefecture[]>([])
   const isMobile = useResponsive(700)
-
-  const handlePrefecturesChange = useCallback(
-    (newPrefectures: Prefecture[]) => {
-      setPrefectures(newPrefectures)
-    },
-    [],
-  )
-
-  const handleSelectionChange = useCallback((newSelection: Set<number>) => {
-    setSelectedPrefs(newSelection)
-  }, [])
-
-  const handleDataChange = useCallback(
-    (newData: Map<number, PopulationResponse>) => {
-      setPopulationData(newData)
-    },
-    [],
-  )
+  const {
+    prefectures,
+    populationData,
+    selectedPrefs,
+    loadingPrefs,
+    loadingPopulation,
+    error,
+    togglePrefecture,
+    clearSelection,
+  } = usePopulationApp()
 
   return (
     <main
@@ -73,9 +59,13 @@ function App() {
           }}
         >
           <PrefectureList
-            onPrefecturesChange={handlePrefecturesChange}
-            onSelectionChange={handleSelectionChange}
-            onDataChange={handleDataChange}
+            prefectures={prefectures}
+            selectedPrefs={selectedPrefs}
+            loadingPrefs={loadingPrefs}
+            loadingPopulation={loadingPopulation}
+            error={error}
+            onTogglePrefecture={togglePrefecture}
+            onClearSelection={clearSelection}
             isMobile={isMobile}
           />
         </section>

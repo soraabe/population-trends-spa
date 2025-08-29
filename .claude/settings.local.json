@@ -1,10 +1,12 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)"
+    ],
     "additionalDirectories": [
       "/Users/abesora/Documents/コード類/population-trends-spa"
-    ],
-    "allow": [
-      "Bash(git add:*)"
     ]
   }
 }
