@@ -30,7 +30,8 @@ export function usePopulationApp() {
         setError(null)
         const result = await apiRequest('/prefectures')
         setPrefectures(result)
-      } catch (err) {
+      } catch {
+
         setError('都道府県データの取得に失敗しました')
       } finally {
         setLoadingPrefs(false)
@@ -47,7 +48,9 @@ export function usePopulationApp() {
     try {
       const result = await apiRequest(`/population/composition/perYear?cityCode=-&prefCode=${prefCode}`)
       setPopulationData(prev => new Map(prev).set(prefCode, result))
-    } catch (err) {
+
+    } catch {
+
       setError(`都道府県${prefCode}の人口データ取得に失敗しました`)
     } finally {
       setLoadingPopulation(prev => {
