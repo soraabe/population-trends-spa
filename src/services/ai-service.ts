@@ -36,7 +36,7 @@ export class AIService {
       }
 
     } catch (error) {
-      
+      console.error('AI analysis failed:', error)
       return {
         type: 'insight',
         selectedPrefectures: [],
@@ -71,7 +71,6 @@ export class AIService {
             summary[series.label] = latest.value
           }
         })
-      } else {
       }
 
       // 全県を必ず1行で出力（未取得は「データなし」）
