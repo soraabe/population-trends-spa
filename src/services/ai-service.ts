@@ -35,7 +35,7 @@ export class AIService {
         insights: result.insights || []
       }
 
-    } catch (error) {
+    } catch {
       
       return {
         type: 'insight',
@@ -71,7 +71,6 @@ export class AIService {
             summary[series.label] = latest.value
           }
         })
-      } else {
       }
 
       // 全県を必ず1行で出力（未取得は「データなし」）
