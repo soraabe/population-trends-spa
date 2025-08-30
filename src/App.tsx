@@ -1,5 +1,7 @@
 import PrefectureList from './components/PrefectureList'
 import PopulationChart from './components/PopulationChart'
+import AIQueryInput from './components/AIQueryInput'
+import AnalysisInsight from './components/AnalysisInsight'
 import { useResponsive } from './hooks/useResponsive'
 import { usePopulationApp } from './hooks/usePopulationApp'
 import './App.css'
@@ -13,8 +15,11 @@ function App() {
     loadingPrefs,
     loadingPopulation,
     error,
+    analysisResult,
+    isAnalyzing,
     togglePrefecture,
     clearSelection,
+    runAnalysis,
   } = usePopulationApp()
 
   return (
@@ -36,6 +41,21 @@ function App() {
           都道府県別人口推移グラフ
         </h1>
       </header>
+
+      {/* AI検索インターフェース */}
+      <AIQueryInput
+        onRunAnalysis={runAnalysis}
+        isAnalyzing={isAnalyzing}
+        isMobile={isMobile}
+      />
+
+      {/* AI分析結果表示 */}
+      {analysisResult && (
+        <AnalysisInsight
+          result={analysisResult}
+          isMobile={isMobile}
+        />
+      )}
 
       <div
         style={{

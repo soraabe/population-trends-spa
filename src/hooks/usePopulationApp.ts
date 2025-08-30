@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect } from 'react'
 import type { Prefecture, PopulationResponse } from '../types/api'
+import { QueryProcessor } from '../services/query-processor'
+import type { AnalysisResult } from '../services/data-analyzer'
 
 const API_BASE_URL = 'https://yumemi-frontend-engineer-codecheck-api.vercel.app/api/v1'
-const API_KEY = '8FzX5qLmN3wRtKjH7vCyP9bGdEaU4sYpT6cMfZnJ'
+const API_KEY = import.meta.env.VITE_API_KEY
 
 export function usePopulationApp() {
   // 全ての状態を一元管理
@@ -12,6 +14,10 @@ export function usePopulationApp() {
   const [loadingPrefs, setLoadingPrefs] = useState<boolean>(true)
   const [loadingPopulation, setLoadingPopulation] = useState<Set<number>>(new Set())
   const [error, setError] = useState<string | null>(null)
+  
+  // AI分析関連の状態
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
 
   // API共通処理
   const apiRequest = async (endpoint: string) => {
@@ -41,13 +47,14 @@ export function usePopulationApp() {
   }, [])
 
   // 人口データ取得
-  const fetchPopulationData = useCallback(async (prefCode: number) => {
-    if (populationData.has(prefCode)) return
+  const fetchPopulationData = useCallback(async (prefCode: number): Promise<PopulationResponse | undefined> => {
+    if (populationData.has(prefCode)) return populationData.get(prefCode)
 
     setLoadingPopulation(prev => new Set(prev).add(prefCode))
     try {
       const result = await apiRequest(`/population/composition/perYear?cityCode=-&prefCode=${prefCode}`)
       setPopulationData(prev => new Map(prev).set(prefCode, result))
+      return result
 
     } catch {
 
@@ -78,7 +85,69 @@ export function usePopulationApp() {
   // 全て解除
   const clearSelection = useCallback(() => {
     setSelectedPrefs(new Set())
+    setAnalysisResult(null) // 分析結果もクリア
   }, [])
+
+  // AI分析実行
+  const runAnalysis = useCallback(async (query: string) => {
+    if (!prefectures.length) {
+      setError('都道府県データが読み込まれていません')
+      return
+    }
+
+    setIsAnalyzing(true)
+    setError(null)
+
+    try {
+      // 1) AI実行前に、未取得の都道府県人口データをまとめて取得し、
+      //    取得結果をローカルMapに反映してからAIへ渡す
+      const localMap = new Map<number, PopulationResponse>(populationData)
+      const allCodes = prefectures.map(p => p.prefCode)
+      const missingPrefCodes = allCodes.filter(code => !localMap.has(code))
+
+      const CONCURRENCY = 8
+      for (let i = 0; i < missingPrefCodes.length; i += CONCURRENCY) {
+        const batch = missingPrefCodes.slice(i, i + CONCURRENCY)
+        await Promise.all(
+          batch.map(async code => {
+            try {
+              const res = await fetchPopulationData(code)
+              if (res) localMap.set(code, res)
+            } catch {
+              // 個別失敗は握りつぶし、他の取得は継続
+            }
+          })
+        )
+      }
+
+      const processor = new QueryProcessor(prefectures, localMap)
+      const result = await processor.processQuery(query)
+      
+      if (result) {
+        setAnalysisResult(result)
+        
+        // 分析結果に基づいて県を自動選択
+        if (result.selectedPrefectures.length > 0) {
+          
+          // 選択された県のデータを並列で取得
+          const prefCodes = result.selectedPrefectures
+          const fetchPromises = prefCodes.map(async (prefCode) => {
+            if (!populationData.has(prefCode)) {
+              return fetchPopulationData(prefCode)
+            }
+          })
+          
+          await Promise.all(fetchPromises)
+          
+          setSelectedPrefs(new Set(prefCodes))
+        }
+      }
+    } catch {
+      setError('分析処理中にエラーが発生しました')
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }, [prefectures, populationData, fetchPopulationData])
 
   return {
     // 状態
@@ -88,9 +157,12 @@ export function usePopulationApp() {
     loadingPrefs,
     loadingPopulation,
     error,
+    analysisResult,
+    isAnalyzing,
     
     // アクション
     togglePrefecture,
     clearSelection,
+    runAnalysis,
   }
 }
