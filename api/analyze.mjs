@@ -1,9 +1,8 @@
 // Vercel Serverless Function: /api/analyze
-// Calls Google Generative AI (Gemini) server-side and returns structured JSON
+// ESM version for Node runtime on Vercel
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const { GoogleGenerativeAI } = require('@google/generative-ai')
-
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
     return res.status(405).json({ error: 'Method Not Allowed' })
@@ -86,4 +85,3 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Internal Server Error' })
   }
 }
-
