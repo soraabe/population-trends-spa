@@ -31,6 +31,7 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(apiKey)
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
+
     const prompt = `
 あなたは日本の人口データ分析の専門家です。ユーザーの自然言語クエリを分析して、適切な都道府県を選択してください。
 
@@ -69,6 +70,7 @@ ${dataContext}
 - 例：大分県128,920人 < 長崎県152,059人 なので、大分県の方が「少ない」
 - データが不足している場合は「推定値として0人」ではなく、利用可能なデータのみで分析してください
 `
+
 
     const result = await model.generateContent(prompt)
     const text = (result.response && typeof result.response.text === 'function')
