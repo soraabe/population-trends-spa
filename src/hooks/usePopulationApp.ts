@@ -3,8 +3,7 @@ import type { Prefecture, PopulationResponse } from '../types/api'
 import { QueryProcessor } from '../services/query-processor'
 import type { AnalysisResult } from '../services/data-analyzer'
 
-const API_BASE_URL = 'https://yumemi-frontend-engineer-codecheck-api.vercel.app/api/v1'
-const API_KEY = import.meta.env.VITE_API_KEY
+const API_BASE_URL = '/api'
 
 export function usePopulationApp() {
   // 全ての状態を一元管理
@@ -21,9 +20,7 @@ export function usePopulationApp() {
 
   // API共通処理
   const apiRequest = async (endpoint: string) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: { 'X-API-KEY': API_KEY }
-    })
+    const response = await fetch(`${API_BASE_URL}${endpoint}`)
     if (!response.ok) throw new Error(`API Error: ${response.status}`)
     const data = await response.json()
     return data.result

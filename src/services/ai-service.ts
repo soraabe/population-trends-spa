@@ -1,6 +1,11 @@
 import type { Prefecture, PopulationResponse } from '../types/api'
 import type { AnalysisResult } from './data-analyzer'
 
+<<<<<<< HEAD
+=======
+const AI_ENDPOINT = import.meta.env.VITE_AI_ENDPOINT || '/api/analyze'
+
+>>>>>>> origin/main
 export class AIService {
   async analyzeQuery(
     query: string,
@@ -10,6 +15,7 @@ export class AIService {
     try {
       const dataContext = this.prepareDataContext(prefectures, populationData)
       
+<<<<<<< HEAD
       const response = await fetch('http://localhost:3001/api/analyze', {
         method: 'POST',
         headers: {
@@ -20,6 +26,23 @@ export class AIService {
           dataContext
         })
       })
+=======
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000)
+      let response: Response
+      try {
+        response = await fetch(AI_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query, dataContext }),
+          signal: controller.signal,
+        })
+      } finally {
+        clearTimeout(timeoutId)
+      }
+>>>>>>> origin/main
 
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`)
@@ -35,8 +58,13 @@ export class AIService {
         insights: result.insights || []
       }
 
+<<<<<<< HEAD
     } catch {
       
+=======
+    } catch (error) {
+      console.error('AI analysis failed:', error)
+>>>>>>> origin/main
       return {
         type: 'insight',
         selectedPrefectures: [],
