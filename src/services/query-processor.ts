@@ -24,7 +24,7 @@ export class QueryProcessor {
     if (spec.region) {
       const analyzer = new DataAnalyzer(this.prefectures, this.populationData)
       const populationType = spec.populationType || '総人口'
-      const limit = spec.limit || 5
+      const limit = spec.limit || 15
       const sortOrder = spec.sortOrder || 'desc'
 
       const regional = analyzer.analyzeRegionalData(spec.region, populationType, limit, sortOrder)
@@ -79,8 +79,7 @@ export class QueryProcessor {
       "人口減少が激しい県を教えて",
       "少子高齢化が深刻な地域",
       "東京と大阪を比較したい",
-      "九州で年少人口が少ない県3選",
-      "働く世代が多い県トップ10"
+      "九州で年少人口が少ない県3選"
     ]
   }
 }
