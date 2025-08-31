@@ -1,10 +1,7 @@
 import { AIService } from './ai-service'
 import type { Prefecture, PopulationResponse } from '../types/api'
 import type { AnalysisResult } from './data-analyzer'
-<<<<<<< HEAD
-=======
 import { DataAnalyzer, REGION_MAPPING } from './data-analyzer'
->>>>>>> origin/main
 
 
 export class QueryProcessor {
@@ -20,9 +17,6 @@ export class QueryProcessor {
 
   // AI使用の自然言語クエリ処理
   async processQuery(query: string): Promise<AnalysisResult> {
-<<<<<<< HEAD
-    return await this.aiService.analyzeQuery(query, this.prefectures, this.populationData)
-=======
     const aiResult = await this.aiService.analyzeQuery(query, this.prefectures, this.populationData)
 
     // クエリから地域/系列/件数/並び順を推定して、必要なら決定論で上書き
@@ -75,7 +69,6 @@ export class QueryProcessor {
     else if (q.includes('多い')) sortOrder = 'desc'
 
     return { region, populationType, limit, sortOrder }
->>>>>>> origin/main
   }
 
   // サポートしているクエリの例を取得
@@ -90,8 +83,4 @@ export class QueryProcessor {
       "働く世代が多い県トップ10"
     ]
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main
