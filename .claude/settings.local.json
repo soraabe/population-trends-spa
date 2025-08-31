@@ -3,7 +3,10 @@
     "allow": [
       "Bash(git add:*)",
       "Bash(git checkout:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "WebFetch(domain:yumemi-frontend-engineer-codecheck-api.vercel.app)",
+      "WebFetch(domain:note.yumemi.co.jp)",
+      "WebFetch(domain:yumemi.notion.site)"
     ],
     "additionalDirectories": [
       "/Users/abesora/Documents/コード類/population-trends-spa"
