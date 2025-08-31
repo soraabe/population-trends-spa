@@ -29,6 +29,7 @@ const REGION_MAPPING = {
   '関東': ['茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県'],
   '関西': ['滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県'],
   '東海': ['岐阜県', '静岡県', '愛知県', '三重県'],
+  '中部': ['新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県'],
   '九州': ['福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県'],
   '東北': ['青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県'],
   '中国': ['鳥取県', '島根県', '岡山県', '広島県', '山口県'],
@@ -106,14 +107,14 @@ class DataAnalyzer {
 
       if (!totalSeries || !elderSeries || !youthSeries) return
 
-      // 2025年のデータで高齢化率を計算
-      const total2025 = totalSeries.data.find(d => d.year === 2025)
-      const elder2025 = elderSeries.data.find(d => d.year === 2025)
-      const youth2025 = youthSeries.data.find(d => d.year === 2025)
+      // 2020年のデータで高齢化率を計算
+      const total2020 = totalSeries.data.find(d => d.year === 2020)
+      const elder2020 = elderSeries.data.find(d => d.year === 2020)
+      const youth2020 = youthSeries.data.find(d => d.year === 2020)
 
-      if (total2025 && elder2025 && youth2025) {
-        const agingRate = (elder2025.value / total2025.value) * 100
-        const youthRate = (youth2025.value / total2025.value) * 100
+      if (total2020 && elder2020 && youth2020) {
+        const agingRate = (elder2020.value / total2020.value) * 100
+        const youthRate = (youth2020.value / total2020.value) * 100
         
         results.push({
           prefCode: pref.prefCode,
@@ -217,8 +218,8 @@ class DataAnalyzer {
       const targetSeries = data.data.find(s => s.label === populationType)
       if (!targetSeries) return
 
-      // 最新年（2025年）のデータを取得
-      const latestData = targetSeries.data.find(d => d.year === 2025)
+      // 最新年（2020年）のデータを取得
+      const latestData = targetSeries.data.find(d => d.year === 2020)
       if (latestData) {
         results.push({
           prefCode: pref.prefCode,
@@ -241,7 +242,7 @@ class DataAnalyzer {
       prefecture: result.prefName,
       value: result.value,
       unit: '人',
-      context: `2025年の${populationType}: ${result.value.toLocaleString()}人`
+      context: `2020年の${populationType}: ${result.value.toLocaleString()}人`
     }))
 
     const sortText = sortOrder === 'desc' ? '多い' : '少ない'

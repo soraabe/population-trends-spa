@@ -2,7 +2,6 @@ import type { Prefecture, PopulationResponse } from '../types/api'
 import type { AnalysisResult } from './data-analyzer'
 
 const AI_ENDPOINT = import.meta.env.VITE_AI_ENDPOINT || '/api/analyze'
-
 export class AIService {
   async analyzeQuery(
     query: string,
